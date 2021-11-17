@@ -23,7 +23,7 @@ class QueueFairWebView extends React.Component {
   onPass = null;
 
   //Used internally.
-  d = true; //Debug level logging
+  d = false; //Debug level logging
   passed = false; //Whether a pass has been received by this WebView.
   unmounted = false; //Whether the component is currently mounted.
   showingBlank = false; //Whether the WebView is currently showing about:blank
