@@ -60,7 +60,7 @@ and restart Metro.  The third npm install is for cross-platform Toasts, which ar
 
 You should have an app with a title bar showing Queue-Fair Demo, with some text and a button.  Pressing the button causes a new Screen to open.  Some data "MyValue" is passed from the first screen to the second.  It is this second screen that we will protect with Queue-Fair in the next section.  You should take a good look at App.js to ensure you understand it before moving to the next section.  There is also a Back button to move you back to the home screen, or you can use the Android back button.
 
-## Adding Queue-Fair to an existing App
+## Adding Queue-Fair to an existing App ##
 
 ** 1. ** Copy and paste "QueueFairAdapter.js" and QueueFairWebView.js from the QueueFairAdapter folder in this distribution into your App folder.  They can go anywhere, but the QueueFairDemo/after/App.js requires them to go in QueueFairDemo.
 
