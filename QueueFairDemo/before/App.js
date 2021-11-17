@@ -57,7 +57,7 @@ const HomeScreen = ({ navigation }) => {
       </Text>
       <Button
         title="Continue with data: MyValue"
-        onPress={() => navigation.navigate('Protected', { 'myname': 'MyData' }) }
+        onPress={() => navigation.navigate('Protected', { 'myname': 'MyValue' }) }
       />
     </View>
   );
