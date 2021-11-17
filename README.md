@@ -60,20 +60,20 @@ and restart Metro.  The third npm install is for cross-platform Toasts, which ar
 
 You should have an app with a title bar showing Queue-Fair Demo, with some text and a button.  Pressing the button causes a new Screen to open.  Some data "MyValue" is passed from the first screen to the second.  It is this second screen that we will protect with Queue-Fair in the next section.  You should take a good look at App.js to ensure you understand it before moving to the next section.  There is also a Back button to move you back to the home screen, or you can use the Android back button.
 
-## Adding Queue-Fair to an existing App ##
+## Adding Queue-Fair to an existing App
 
-**6.** Copy and paste "QueueFairAdapter.js" and QueueFairWebView.js from the QueueFairAdapter folder in this distribution into your App folder.  They can go anywhere, but the QueueFairDemo/after/App.js requires them to go in QueueFairDemo.
+** 1. ** Copy and paste "QueueFairAdapter.js" and QueueFairWebView.js from the QueueFairAdapter folder in this distribution into your App folder.  They can go anywhere, but the QueueFairDemo/after/App.js requires them to go in QueueFairDemo.
 
-**7.** If you are using the QueueFairDemo app from the previous section, copy and paste QueueFairDemo/after/App.js into your QueueFairDemo folder, overwriting the existing App.js
+** 2. ** If you are using the QueueFairDemo app from the previous section, copy and paste QueueFairDemo/after/App.js into your QueueFairDemo folder, overwriting the existing App.js
 
-**8.** The library has a couple of dependencies.  Install them with
+** 3. ** The library has a couple of dependencies.  Install them with
 
 npm install react-native-webview
 npm install react-native-default-preference
 
 and restart Metro and build and run the app.
 
-**9.** If you are using the QueueFairDemo app, you will see that (starting from the bottom of App.js):
+** 4. ** If you are using the QueueFairDemo app, you will see that (starting from the bottom of App.js):
 - The NavigationContainer has been wrapped in a <>...</> stanza that contains the hook to display Toasts.  This is purely for demonstration purposes and not necessary for a production app.
 - A new Screen has been defined, QueueScreen.  This will only be displayed if a visitor needs to see a Queue Page.
 - The HomeScreen definition has been updated to replace the onPress property with a call to adapter.go(), instead of launching ProtectedScreen directly.  It also contains two new buttons to clear persistent storage to help you test.  To completely clear storage, saved queue places and saved Passed status, both buttons must be pressed.
@@ -84,10 +84,10 @@ and restart Metro and build and run the app.
 - A QueueFairConfig object exists, which you need to modify with your account system name and queue system name from the Queue-Fair Portal.
 - We have some additional import statements to make the various system components accessible to the app.
 
-**10.** If you are not using the QueueFairDemo app, you will need to make similar changes.  You need to create a new QueueFairAdapter object every time you wish to start/open the protected activity, pass it a Config and a Listener, and call go().  Particularly important is the onShow method of the Listener, which must cause a QueueFairWebView to be shown in some way, and the onPass() method which must launch your protected activity/screen/operation.  The QueueFairDemo app also shows how to pass data from the calling screen to the protected screen even when a Queue Page is shown; we recommend you use the same methodology.  When someone is Passed by the queue, any Queue Screen should be removed from the Navigation Stack as shown.
+** 5. ** If you are not using the QueueFairDemo app, you will need to make similar changes.  You need to create a new QueueFairAdapter object every time you wish to start/open the protected activity, pass it a Config and a Listener, and call go().  Particularly important is the onShow method of the Listener, which must cause a QueueFairWebView to be shown in some way, and the onPass() method which must launch your protected activity/screen/operation.  The QueueFairDemo app also shows how to pass data from the calling screen to the protected screen even when a Queue Page is shown; we recommend you use the same methodology.  When someone is Passed by the queue, any Queue Screen should be removed from the Navigation Stack as shown.
 
 
-**16.** Build and run your app.
+** 6. ** Build and run your app.
 
 That's it you're done!
 
