@@ -206,7 +206,7 @@ const HomeScreen = ({ navigation }) => {
       </Text>
       <Button
         title="Continue with data: MyValue"
-        // Replacing  onPress={() => navigation.navigate('Protected', { 'myname': 'MyData' }) }
+        // Replacing  onPress={() => navigation.navigate('Protected', { 'myname': 'MyValue' }) }
         onPress={() => {
           QueueFairConfig.data = { myname: 'MyValue' };
 
