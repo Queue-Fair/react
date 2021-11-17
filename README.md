@@ -74,15 +74,15 @@ npm install react-native-default-preference
 and restart Metro and build and run the app.
 
 **9.** If you are using the QueueFairDemo app, you will see that (starting from the bottom of App.js):
-	- The NavigationContainer has been wrapped in a <>...</> stanza that contains the hook to display Toasts.  This is purely for demonstration purposes and not necessary for a production app.
-	- That a new Screen has been defined, QueueScreen.  This will only be displayed if a visitor needs to see a Queue Page.
-	- That the HomeScreen definition has been updated to replace the onPress property with a call to adapter.go(), instead of launching ProtectedScreen directly.  It also contains two new buttons to clear persistent storage to help you test.  To completely clear storage, saved queue places and saved Passed status, both buttons must be pressed.
-	- That the definition of QueueScreen has been added, including a QueueFairWebView with the necessary configuration and listener properties.
-	- That we have added functions to reset Adapter (Preference) and WebView (Cookie) peristent storage.  This is purely to help you test, and would not be present in a production app.
-	- that the launching of the Protected Screen has been moved to a function, and a function to launch the Queue Screen has been created.
-	- A QueueFairListener object exists, that has a placeholder for the navigation stack and implementations of the various listener methods needed by the SDK.  Toasts will be shown every time a Listener method is called, but you wouldn't show them in a production app.  The library files QueueFairWebView.js and QueueFairAdapter.js don't use Toasts.
-	- A QueueFairConfig object exists, which you need to modify with your account system name and queue system name from the Queue-Fair Portal.
-	- We have some additional import statements to make the various system components accessible to the app.
+- The NavigationContainer has been wrapped in a <>...</> stanza that contains the hook to display Toasts.  This is purely for demonstration purposes and not necessary for a production app.
+- A new Screen has been defined, QueueScreen.  This will only be displayed if a visitor needs to see a Queue Page.
+- The HomeScreen definition has been updated to replace the onPress property with a call to adapter.go(), instead of launching ProtectedScreen directly.  It also contains two new buttons to clear persistent storage to help you test.  To completely clear storage, saved queue places and saved Passed status, both buttons must be pressed.
+- The definition of QueueScreen has been added, including a QueueFairWebView with the necessary configuration and listener properties.
+- We have added functions to reset Adapter (Preference) and WebView (Cookie) peristent storage.  This is purely to help you test, and would not be present in a production app.
+- The launching of the Protected Screen has been moved to a function, and a function to launch the Queue Screen has been created.
+- A QueueFairListener object exists, that has a placeholder for the navigation stack and implementations of the various listener methods needed by the SDK.  Toasts will be shown every time a Listener method is called, but you wouldn't show them in a production app.  The library files QueueFairWebView.js and QueueFairAdapter.js don't use Toasts.
+- A QueueFairConfig object exists, which you need to modify with your account system name and queue system name from the Queue-Fair Portal.
+- We have some additional import statements to make the various system components accessible to the app.
 
 **10.** If you are not using the QueueFairDemo app, you will need to make similar changes.  You need to create a new QueueFairAdapter object every time you wish to start/open the protected activity, pass it a Config and a Listener, and call go().  Particularly important is the onShow method of the Listener, which must cause a QueueFairWebView to be shown in some way, and the onPass() method which must launch your protected activity/screen/operation.  The QueueFairDemo app also shows how to pass data from the calling screen to the protected screen even when a Queue Page is shown; we recommend you use the same methodology.  When someone is Passed by the queue, any Queue Screen should be removed from the Navigation Stack as shown.
 
