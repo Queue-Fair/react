@@ -134,22 +134,23 @@ class QueueFairAdapter {
     var url =
       'https://' +
       this.config.account +
-      '.queue-fair.net/adapter' +
+      '.queue-fair.net/adapter/' +
       this.config.queue;
-    if (this.d) {
-      console.log("Consulting adapter " + url);
-    }
 
     var sep = '?';
     if (this.uid != null) {
       url += sep + 'uid=' + this.uid;
       sep = '&';
     }
-
+    
     url +=
       sep +
       'identifier=' +
       encodeURIComponent('QUEUE-FAIR REACT NATIVE ADAPTER');
+
+    if (this.d) {
+      console.log("Consulting adapter " + url);
+    }
     fetch(url)
       .then(response => response.json())
       .then(json => this.gotAdapter(json))
