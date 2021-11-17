@@ -152,8 +152,13 @@ class QueueFairAdapter {
       console.log("Consulting adapter " + url);
     }
     fetch(url)
-      .then(response => response.json())
-      .then(json => this.gotAdapter(json))
+      .then(response => response.text())
+      .then(jsonStr => {
+        if(this.d) {
+          console.log("Adapter received "+jsonStr);
+        }
+        this.gotAdapter(jsonStr);
+      })
       .catch(error => {
         if (this.finished) {
           return;
@@ -166,6 +171,17 @@ class QueueFairAdapter {
   //We got a response from the Queue-Fair servers.
   gotAdapter(json) {
     try {
+
+      if(json.indexOf("{") == -1 || json.indexOf("<") === 0) {
+        if(this.d) {
+          console.log("Bad JSON received");
+        }
+        this.listener.onError("Did not receive JSON response - is your config correct?");
+        return;
+      } 
+
+      json = JSON.parse(json);
+
       if (json == null) {
         this.finished = true;
         this.listener.onError('Null result from Adapter');
