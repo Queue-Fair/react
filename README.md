@@ -95,7 +95,7 @@ You should have an app with a title bar showing Queue-Fair Demo, with some text 
 
 ## Adding Queue-Fair to an existing App ##
 
-**1.** Copy and paste "QueueFairAdapter.js" and QueueFairWebView.js from the QueueFairAdapter folder in this distribution into your App folder.  They can go anywhere in your own projects, but the QueueFairDemo/after/App.js code requires them to go in the QueueFairDemo folder.
+**1.** Copy and paste QueueFairAdapter.js and QueueFairWebView.js from the QueueFairAdapter folder in this distribution into your App folder.  They can go anywhere in your own projects, but the QueueFairDemo/after/App.js code requires them to go in the QueueFairDemo folder.
 
 **2.** If you are using the QueueFairDemo app from the previous section, copy and paste QueueFairDemo/after/App.js into your QueueFairDemo folder, overwriting the existing App.js
 
