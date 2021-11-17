@@ -25,36 +25,43 @@ This guide assumes you already have installed React Native CLI and set the neces
 
 **2.** Create a new React Native app called QueueFairDemo, and cd into it:
 
+```
 npx react-native init QueueFairDemo
 cd QueueFairDemo
-
+```
 **3.** Open another command/prompt terminal. Use cd to go to the QueueFairDemo folder.  Start Metro with and leave it running in its own window.
 
+```
 npx react-native start
-
+```
 **4.** Go back to your other window.  Start the out-of-the-box React webapp with 
 
+```
 npx react-native run-android
+```
 
-If everything is configured correctly, this will start a new Android Emulator if one is not already running, and you will see the React Native out-of-the-box webapp appear eventually.  If you find you need to install any additional packages with npm install, you will need to restart metro (CTRL-C to quit) in the other window before trying again.
+If everything is configured correctly, this will start a new Android Emulator if one is not already running, and you will see the React Native out-of-the-box webapp appear eventually.  If you find you need to install any additional packages with `npm install`, you will need to restart metro (CTRL-C to quit) in the other window before trying again.
 
 **5.** Using your favourite text editor, open App.js within the app folder you have just created.  Try changing some of the displayed text, and saving.  Metro should pick up your changes and apply them automatically - if not, you need 
 
+```
 npm install --save-dev sane
+```
 
-and restart Metro, and run npx react-native run-android again.
+and restart Metro, and run `npx react-native run-android` again.
 
 **6.** Copy and paste App.js from the QueueFairDemo/before folder of this distribution into the QueueFairDemo folder that you have created.  Errors will be thrown because the Demo app uses Screen navigation to present a series of screens, rather than the single whole-page out-of-the-box display used by the default React Native app that you have created.
 
 **7.** To install the libraries for Screen and Navigation, run
 
+```
 npm install react-native-screens react-native-safe-area-context
 npm install @react-navigation/native @react-navigation/native-stack
 npm install react-native-toast-notifications
+```
+and restart Metro.  The third `npm install` is for cross-platform Toasts, which are not used by the QueueFairDemo/before code, but are used to show when listener methods are called by the Adapter in QueueFairDemo/after, so it's best to install them now.  Build and run your app again with `npx react-native run-android`.
 
-and restart Metro.  The third npm install is for cross-platform Toasts, which are not used by the QueueFairDemo/before code, but are used to show when listener methods are called by the Adapter, so it's best to install them now.  Build and run your app again with npx react-native run-android.
-
-You should have an app with a title bar showing Queue-Fair Demo, with some text and a button.  Pressing the button causes a new Screen to open.  Some data "MyValue" is passed from the first screen to the second.  It is this second screen that we will protect with Queue-Fair in the next section.  You should take a good look at App.js to ensure you understand it before moving to the next section.  There is also a Back button to move you back to the home screen, or you can use the Android back button.
+You should have an app with a title bar showing Queue-Fair Demo, with some text and a button.  Pressing the button causes a new Screen to open.  Some data `"MyValue"` is passed from the first screen to the second.  It is this second screen that we will protect with Queue-Fair in the next section.  You should take a good look at App.js to ensure you understand it before moving to the next section.  There is also a Back button to move you back to the home screen, or you can use the Android back button.
 
 ## Adding Queue-Fair to an existing App ##
 
@@ -64,8 +71,10 @@ You should have an app with a title bar showing Queue-Fair Demo, with some text 
 
 **3.** The library has a couple of dependencies.  Install them with
 
+```
 npm install react-native-webview
 npm install react-native-default-preference
+```
 
 and restart Metro and build and run the app.
 
