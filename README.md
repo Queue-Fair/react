@@ -13,11 +13,25 @@ You don't have to use a new Screen to show the QueueFairWebView either.
 
 The Adapter manages its own persistent storage to remember that particular users have been Passed by Queue-Fair, in the form of DefaultPreferences, and also persistent Cookies when a QueueFairWebView is launched.   Unlike some of our other Adapters, the React Native adapter does not download a settings file from the Queue-Fair system - in React Native, you set the account system name, queue system name and Passed Lifetime programmatically.
 
-Typically, you will replace a call to launch a protected activity or start a protected operation with a call to QueueFairAdapter, implementing a listener object that then launches the protected activity or starts the protected operation when the app user is Passed by the queue.  Your listener must also cause a QueueFairWebView to be shown when its onShow() method is called - please see the QueueFairDemo code within this distribution for a complete example.
+Typically, you will replace a call to launch a protected activity or start a protected operation with a call to `new QueueFairAdapter(config, listener).go()`, passing a listener object that then launches the protected activity or starts the protected operation when the app user is Passed by the queue.  Your listener must also cause a QueueFairWebView to be shown when its onShow() method is called - please see the QueueFairDemo code within this distribution for a complete example.
 
 If your vistors navigate away from a displayed Queue Page (by using the back button, by opening another app, or their phone going to sleep, for example), they do not lose their place in the queue - it is saved in the same way as places are saved for your web visitors.  You can have your App users participate in the same Queue as your web users for total fairness, or you can put them in a separate queue - it's up to you.
 
-This guide assumes you already have installed React Native CLI and set the necessary environment variables as described at https://reactnative.dev/docs/environment-setup , as well as the Node package manager npm, and also installed at least one Android Emulator as described there.  We found we needed to set ANDROID_SDK_ROOT, add ANROID_SDK_ROOT/emulator and ANDROID_SDK_ROOT/platform-tools to the PATH and install a Java 1.8 JDK (not JRE) as this contains the necessary tools.jar (not present in later versions of Java), and set the JAVA_HOME environment variable too.  We recommend you perform the steps below to build the QueueFairDemo app, before importing the QueueFairAdapter module into your existing React Native app.
+This guide assumes you already have installed Android Studio or XCode with at least one device Emulator, and followed the React Native CLI tutorial and set the necessary environment variables as described at https://reactnative.dev/docs/environment-setup , as well as the Node package manager npm.
+
+On Mac, in addition to the steps required in the above tutorial, we found our version of Node was too old and did not contain npx.  To update Node, we did:
+
+```
+sudo npm cache clean -f
+sudo npm install -g n
+sudo n stable
+```
+
+We also had to update cocoapods to a more recent version with `sudo gem install cocoapods`.  We also installed Watchman as advised in the tutorial.  
+
+On Windows (for Android) we found we needed to set the ANDROID_SDK_ROOT environment variable, add ANROID_SDK_ROOT/emulator and ANDROID_SDK_ROOT/platform-tools to the PATH and install a Java 1.8 JDK (not JRE) as this contains the necessary tools.jar (not present in later versions of Java), and set the JAVA_HOME environment variable too.  
+
+To get started, we recommend you perform the steps below to build the QueueFairDemo app, before importing the QueueFairAdapter module into your existing React Native app.
 
 ## Building the Demo App ##
 
@@ -29,26 +43,41 @@ This guide assumes you already have installed React Native CLI and set the neces
 npx react-native init QueueFairDemo
 cd QueueFairDemo
 ```
+
+If you are building for iOS, you also need to do:
+
+```
+cd ios
+pod install
+```
+
+to install the necessary React packages, or your app won't compile.  We found we needed to do this after each `npm install` in these instructions.
+
 **3.** Open another command/prompt terminal. Use cd to go to the QueueFairDemo folder.  Start Metro with and leave it running in its own window.
 
 ```
 npx react-native start
 ```
+
 **4.** Go back to your other window.  Start the out-of-the-box React webapp with 
 
 ```
 npx react-native run-android
 ```
+or
+```
+npx react-native run-ios
+```
 
-If everything is configured correctly, this will start a new Android Emulator if one is not already running, and you will see the React Native out-of-the-box webapp appear eventually.  If you find you need to install any additional packages with `npm install`, you will need to restart metro (CTRL-C to quit) in the other window before trying again.
+If everything is configured correctly, this will start a new Emulator if one is not already running, and you will see the React Native out-of-the-box webapp appear eventually.  If you find you need to install any additional packages with `npm install`, you will need to restart Metro (CTRL-C to quit) in the other window before trying again, and if you are building for iOS, you'll need to do a `pod install` in the `QueueFairDemo/ios` folder too.
 
-**5.** Using your favourite text editor, open App.js within the app folder you have just created.  Try changing some of the displayed text, and saving.  Metro should pick up your changes and apply them automatically - if not, you need 
+**5.** Using your favourite text editor, open App.js within the app folder you have just created.  Try changing some of the displayed text, and saving.  Metro should pick up your changes and apply them automatically - if not, on Windows you need 
 
 ```
 npm install --save-dev sane
 ```
 
-and restart Metro, and run `npx react-native run-android` again.
+and restart Metro, and run `npx react-native run-android` again.  On Mac, this happened automatically for us with watchman.
 
 **6.** Copy and paste App.js from the QueueFairDemo/before folder of this distribution into the QueueFairDemo folder that you have created.  Errors will be thrown because the Demo app uses Screen navigation to present a series of screens, rather than the single whole-page out-of-the-box display used by the default React Native app that you have created.
 
@@ -59,13 +88,14 @@ npm install react-native-screens react-native-safe-area-context
 npm install @react-navigation/native @react-navigation/native-stack
 npm install react-native-toast-notifications
 ```
-and restart Metro.  The third `npm install` is for cross-platform Toasts, which are not used by the QueueFairDemo/before code, but are used to show when listener methods are called by the Adapter in QueueFairDemo/after, so it's best to install them now.  Build and run your app again with `npx react-native run-android`.
 
-You should have an app with a title bar showing Queue-Fair Demo, with some text and a button.  Pressing the button causes a new Screen to open.  Some data `"MyValue"` is passed from the first screen to the second.  It is this second screen that we will protect with Queue-Fair in the next section.  You should take a good look at App.js to ensure you understand it before moving to the next section.  There is also a Back button to move you back to the home screen, or you can use the Android back button.
+and restart Metro (and on Mac, `pod install`).  The third `npm install` is for cross-platform Toasts, which are not used by the QueueFairDemo/before code, but are used to show when listener methods are called by the Adapter in QueueFairDemo/after, so it's a good idea to install that package now.  Build and run your app again with `npx react-native run-android` or `npx react-native run-ios`.
+
+You should have an app with a title bar showing Queue-Fair Demo, with some text and a button.  Pressing the button causes a new Screen to open.  Some data `MyValue` is passed from the first screen to the second.  It is this second screen that we will protect with Queue-Fair in the next section.  You should take a good look at App.js to ensure you understand it before moving to the next section.  There is also a Back button in the title bar to move you back to the home screen, or you can use the back button on Android.
 
 ## Adding Queue-Fair to an existing App ##
 
-**1.** Copy and paste "QueueFairAdapter.js" and QueueFairWebView.js from the QueueFairAdapter folder in this distribution into your App folder.  They can go anywhere, but the QueueFairDemo/after/App.js requires them to go in QueueFairDemo.
+**1.** Copy and paste "QueueFairAdapter.js" and QueueFairWebView.js from the QueueFairAdapter folder in this distribution into your App folder.  They can go anywhere in your own projects, but the QueueFairDemo/after/App.js code requires them to go in the QueueFairDemo folder.
 
 **2.** If you are using the QueueFairDemo app from the previous section, copy and paste QueueFairDemo/after/App.js into your QueueFairDemo folder, overwriting the existing App.js
 
@@ -76,9 +106,9 @@ npm install react-native-webview
 npm install react-native-default-preference
 ```
 
-and restart Metro and build and run the app.
+and restart Metro (and do `pod install` on Mac) and build and run the app as before.
 
-**4.** If you are using the QueueFairDemo app, you will see that (starting from the bottom of App.js):
+**4.** If you are using the QueueFairDemo app, you will see the following alterations (starting from the bottom of App.js):
 - The NavigationContainer has been wrapped in a <>...</> stanza that contains the hook to display Toasts.  This is purely for demonstration purposes and not necessary for a production app.
 - A new Screen has been defined, QueueScreen.  This will only be displayed if a visitor needs to see a Queue Page.
 - The HomeScreen definition has been updated to replace the onPress property with a call to adapter.go(), instead of launching ProtectedScreen directly.  It also contains two new buttons to clear persistent storage to help you test.  To completely clear storage, saved queue places and saved Passed status, both buttons must be pressed.
@@ -89,8 +119,7 @@ and restart Metro and build and run the app.
 - A QueueFairConfig object exists, which you need to modify with your account system name and queue system name from the Queue-Fair Portal.
 - We have some additional import statements to make the various system components accessible to the app.
 
-**5.** If you are not using the QueueFairDemo app, you will need to make similar changes.  You need to create a new QueueFairAdapter object every time you wish to start/open the protected activity, pass it a Config and a Listener, and call go().  Particularly important is the onShow method of the Listener, which must cause a QueueFairWebView to be shown in some way, and the onPass() method which must launch your protected activity/screen/operation.  The QueueFairDemo app also shows how to pass data from the calling screen to the protected screen even when a Queue Page is shown; we recommend you use the same methodology.  When someone is Passed by the queue, any Queue Screen should be removed from the Navigation Stack as shown.
-
+**5.** If you are not using the QueueFairDemo app, you will need to make similar changes to those listed in 4. above.  You need to create a new QueueFairAdapter object every time you wish to start/open the protected activity, pass it a Config and a Listener, and call go().  Particularly important is the onShow method of the Listener, which must cause a QueueFairWebView to be shown in some way, and the onPass() method which must launch your protected activity/screen/operation.  The QueueFairDemo app also shows how to pass data from the calling screen to the protected screen even when a Queue Page is shown; we recommend you use the same methodology.  When someone is Passed by the queue, any Queue Screen should be removed from the Navigation Stack as shown.
 
 **6.** Build and run your app.
 
@@ -117,7 +146,7 @@ In the App tap Reset Adapter to delete your Passed status, stored by the app.
 
 Tap Continue.
  - Verify that you are now sent to queue.
- - When you come back to the page from the queue, verify that a Toast appears containing the word "Passed", and that the protected activity launches.
+ - When you pass from the front of the quue, verify that a Toast appears containing the word "Pass", and that the protected screen launches.
  - Use the back button and hit Continue again.  Verify that you are shown "Repass", without seeing a Queue Page a second time.
 
 If you wish to fully clear your Passed status, then if you have been shown a Queue Page, you must tap both Reset Adapter and Reset Queue-Fair buttons.  These buttons are present in the QueueFairDemo app to help you test - you would not normally show them in a production app.
@@ -133,9 +162,9 @@ QueueFairAdapter objects are not reusable - you should create a new one every ti
 
 To customise the display for your app, the easiest way is to can create a variant of your queue for use within your app in the Queue-Fair Portal, and tell your app to use it by passing its name as the variant parameter in QueueFairConfig.  This means that your app users can participate in the same queue as your website visitors, but have a custom display for your app.
 
-To include React Native components in your display, see the QueueFairDemo/after/app.js code.
+To include React Native components in your Queue display, see the QueueFairDemo/after/App.js code for an example of how to do this.
 
-Debug level logging is disabled by default, but you can enable it with QueueFairConfig.debug = true - but please make sure it is disabled for release versions of your app.
+Debug level logging is disabled by default, but you can enable it with `config.debug = true` - but please make sure it is disabled for release versions of your app.
 
 Unlike our Server-Side Adapters, The React Native adapter always works in SAFE_MODE - SIMPLE_MODE is not suitable for this use case.
 
@@ -146,11 +175,11 @@ You may wish to send a Push Notification to a user who has abandoned telling the
 
 Once you have a Push Notification system and server up and running, the procedure is as follows:
 	
-**1.** In the onJoin() method of your QueueFairClientListener implementation, store the received Request Number, which is the user's position in the queue.  The Adapter will also automatically store it for you, and you can get the most recently assigned Request Number as shown in the QueueFairDemo/after/app.js code.  Don't ask your Push Notification server to schedule a notification in onJoin() - just remember the request number in case you need it later.  If your app does not already have a persistent storage mechanism, there is example code for storing data persistently with DefaultPreference in QueueFairWebView.js
+**1.** In the onJoin() method of your listener implementation, store the received Request Number, which is the user's position in the queue.  The Adapter will also automatically store it for you, and you can get the most recently assigned Request Number as shown in the QueueFairDemo/after/App.js code.  Don't ask your Push Notification server to schedule a notification in onJoin() - just remember the request number in case you need it later.  If your app does not already have a persistent storage mechanism, there is example code for storing data persistently with DefaultPreference in QueueFairWebView.js
 	
 **2.** You only want to send Push Notifications to people who have abandoned.  So, in the onAbandon() method of your QueueFairClientListener implementation, tell your Push Notification server that this user wants a notification when they reach the front of the queue.  Include the request number from onJoin() in that message to your Push Notification server.  Note that it is possible that the onAbandon() method may be called multiple times due to a single act of abandonment - but you should only ask your Push Notification to send a notification once. Similarly, if the wait is long, users may abandon the queue and return to it several times.  You should therefore set a preference to persistently remember that the app has asked for a notification from your Push Notification server here, and not ask again if it is already set.
 
-**3.** Your Push Notification server will need store an association between the Request Number and the unique ID that it uses to send notifications to specific users.  It is recommended that associations stored for more than 24 hours are deleted.  Your Push Notification server will also need to consult the Queue-Fair Queue Status API every minute or so to find out what the current Serving number is.  If the current Serving number is greater than or equal to the Request number for a particular user, it is time to send that user the Push Notification.  The Status API may also report that the queue has emptied.  If that happens, don't send notifications to all the users that have requested them at the same time, as if they all come back at the same time, it may be necessary to queue them again - but you can prevent that from happening by sending the notifications no faster than the SafeGuard Rate for your queue when the queue is empty.
+**3.** Your Push Notification server will need to store an association between the Request Number and the unique ID that it uses to send notifications to specific users.  It is recommended that associations stored for more than 24 hours are deleted.  Your Push Notification server will also need to consult the Queue-Fair Queue Status API every minute or so to find out what the current Serving number is.  If the current Serving number is greater than or equal to the Request number for a particular user, it is time to send that user the Push Notification.  The Status API may also report that the queue has emptied.  If that happens, don't send notifications to all the users that have requested them at the same time, as if they all come back at the same time, it may be necessary to queue them again - but you can prevent that from happening by sending the notifications no faster than the SafeGuard Rate for your queue when the queue is empty.
 	
 **4.** If the user returns to the app and opens the Queue again before their turn has been called, or after their turn has been called but before they have received a Push Notification from your Push Notification server, you should tell your Push Notification server not to send the notification after all.  So, in the onPass(), onShow() and onJoin() methods of your QueueFairClientListener implementation, check to see if the preference you set in Step 2 has been set, and if it has, tell your Push Notification server that a notification is no longer required, and then unset the preference.
 	
