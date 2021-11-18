@@ -1,7 +1,7 @@
 ---
 ## Queue-Fair React Native Adapter README & Installation Guide
 
-Queue-Fair can be added to any React Native app easily in minutes.  This Queue-Fair React Native module is suitable for native React Native apps on iOS, Android and MacOS - if your React Native app is a Web App running entirely in a browser, then the Client Side JavaScript Adapter is more suited to that.  You will need a Queue-Fair account - please visit https://queue-fair.com/free-trial if you don't already have one.  You should also have received our Technical Guide.  You can find out all about Queue-Fair at https://queue-fair.com
+Queue-Fair can be added to any React Native app easily in minutes.  This Queue-Fair React Native module is suitable for native React Native apps on iOS, Android, and also can be used within React Native apps for MacOS and Windows - but if your React Native app is a Web App running entirely in a browser, then the Client Side JavaScript Adapter is more suited to that.  You will need a Queue-Fair account - please visit https://queue-fair.com/free-trial if you don't already have one.  You should also have received our Technical Guide.  You can find out all about Queue-Fair at https://queue-fair.com
 
 
 ## About the Adapter
@@ -167,6 +167,8 @@ To include React Native components in your Queue display, see the QueueFairDemo/
 Debug level logging is disabled by default, but you can enable it with `config.debug = true` - but please make sure it is disabled for release versions of your app.
 
 Unlike our Server-Side Adapters, The React Native Adapter always works in SAFE_MODE - SIMPLE_MODE is not suitable for this use case.
+
+You can also use this library on Windows and MacOS React Native apps - but note that these platforms do not support DefaultPreference, so you will need to use another storage mechanism for persistent storage of Passed status on these platforms.  This will require minor modifications to QueueFairAdapter.js and QueueFairWebService.js wherever DefaultPreference is used.
 
 ## Push Notifications
 If a user abandons the queue by closing the app or navigating away from it, their place is saved, and they will proceed through the queue when they re-open the app as if they had left it open all along.  If the front of the queue has not yet reached them, they will be closer to it.  If the front of the queue has passed them, they will be passed straight away, depending on the Front of Queue settings that you use for your queue in the Queue-Fair Portal.
