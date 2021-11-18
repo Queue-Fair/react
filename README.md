@@ -11,7 +11,7 @@ You can create app-specific displays for your React Native apps by using the Por
 
 You don't have to use a new Screen to show the QueueFairWebView either.
 
-The Adapter manages its own persistent storage to remember that particular users have been Passed by Queue-Fair, in the form of DefaultPreferences, and also persistent Cookies when a QueueFairWebView is launched.   Unlike some of our other Adapters, the React Native adapter does not download a settings file from the Queue-Fair system - in React Native, you set the account system name, queue system name and Passed Lifetime programmatically.
+The Adapter manages its own persistent storage to remember that particular users have been Passed by Queue-Fair, in the form of DefaultPreferences, and also persistent Cookies when a QueueFairWebView is launched.   Unlike some of our other Adapters, the React Native Adapter does not download a settings file from the Queue-Fair system - in React Native, you set the account system name, queue system name and Passed Lifetime programmatically.
 
 Typically, you will replace a call to launch a protected activity or start a protected operation with a call to `new QueueFairAdapter(config, listener).go()`, passing a listener object that then launches the protected activity or starts the protected operation when the app user is Passed by the queue.  Your listener must also cause a QueueFairWebView to be shown when its onShow() method is called - please see the QueueFairDemo code within this distribution for a complete example.
 
@@ -115,7 +115,7 @@ and restart Metro (and do `pod install` on Mac) and build and run the app as bef
 - The definition of QueueScreen has been added, including a QueueFairWebView with the necessary configuration and listener properties.
 - We have added functions to reset Adapter (Preference) and WebView (Cookie) peristent storage.  This is purely to help you test, and would not be present in a production app.
 - The launching of the Protected Screen has been moved to a function, and a function to launch the Queue Screen has been created.
-- A QueueFairListener object exists, that has a placeholder for the navigation stack and implementations of the various listener methods needed by the SDK.  Toasts will be shown every time a Listener method is called, but you wouldn't show them in a production app.  The library files QueueFairWebView.js and QueueFairAdapter.js don't use Toasts.
+- A QueueFairListener object exists, that has a placeholder for the navigation stack and implementations of the various listener methods needed by the Adapter and WebView.  Toasts will be shown every time a Listener method is called, but you wouldn't show them in a production app.  The library files QueueFairWebView.js and QueueFairAdapter.js don't use Toasts.
 - A QueueFairConfig object exists, which you need to modify with your account system name and queue system name from the Queue-Fair Portal.
 - We have some additional import statements to make the various system components accessible to the app.
 
@@ -166,7 +166,7 @@ To include React Native components in your Queue display, see the QueueFairDemo/
 
 Debug level logging is disabled by default, but you can enable it with `config.debug = true` - but please make sure it is disabled for release versions of your app.
 
-Unlike our Server-Side Adapters, The React Native adapter always works in SAFE_MODE - SIMPLE_MODE is not suitable for this use case.
+Unlike our Server-Side Adapters, The React Native Adapter always works in SAFE_MODE - SIMPLE_MODE is not suitable for this use case.
 
 ## Push Notifications
 If a user abandons the queue by closing the app or navigating away from it, their place is saved, and they will proceed through the queue when they re-open the app as if they had left it open all along.  If the front of the queue has not yet reached them, they will be closer to it.  If the front of the queue has passed them, they will be passed straight away, depending on the Front of Queue settings that you use for your queue in the Queue-Fair Portal.
