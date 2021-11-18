@@ -110,7 +110,7 @@ and restart Metro (and do `pod install` on Mac) and build and run the app as bef
 
 **4.** If you are using the QueueFairDemo app, you will see the following alterations (starting from the bottom of App.js):
 - The NavigationContainer has been wrapped in a <>...</> stanza that contains the hook to display Toasts.  This is purely for demonstration purposes and not necessary for a production app.
-- A new Screen has been defined, QueueScreen.  This will only be displayed if a visitor needs to see a Queue Page.
+- A new Screen has been defined, QueueScreen.  This will only be displayed if an app user needs to see a Queue Page.
 - The HomeScreen definition has been updated to replace the onPress property with a call to adapter.go(), instead of launching ProtectedScreen directly.  It also contains two new buttons to clear persistent storage to help you test.  To completely clear storage, saved queue places and saved Passed status, both buttons must be pressed.
 - The definition of QueueScreen has been added, including a QueueFairWebView with the necessary configuration and listener properties.
 - We have added functions to reset Adapter (Preference) and WebView (Cookie) peristent storage.  This is purely to help you test, and would not be present in a production app.
