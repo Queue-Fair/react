@@ -13,11 +13,24 @@ class QueueFairAdapter {
   readTimeout = 5;
   passedLifetimeMinutes = 60;
 
+  savedTimeout = null;
+  res = null;
+
+  static ERROR=1;
+  static NOINTERNET=2;
+  //Only returns SHOW if config.waitForQueue is false.
+  static SHOW=3;
+  static PASS=4;
+  static ABANDON=5;
+
+  static instance = null;
+
   //Store the config and listener and set flag for debug logging.
   constructor(config, listener) {
     this.config = config;
     this.listener = listener;
     this.d = config.debug;
+    QueueFairAdapter.instance = this;
   }
 
   //Returns immediately.  One of the listener methods will be called later.
@@ -26,32 +39,58 @@ class QueueFairAdapter {
       console.log("Adapter starting");
     }
 
-    //In case it was set to true by an earlier view.
-    this.config.showingQueue = false;
-
     if(typeof this.config.readTimeout !== "undefined") {
       this.readTimeout = this.config.readTimeout;
     }
+
+    //Must have little time to work.
+    if(this.readTimeout <= 0 ) {
+      this.readTimeout = 1;
+    }
+
+    //Sets a timeout to call onNoInternet() if we don't finish the process in config.readTimeout seconds.
+    this.savedTimeout = setTimeout(() => {
+      this.onTimeOut();
+    }, this.readTimeout * 1000);
+
+    //In case it was set to true by an earlier view.
+    this.config.showingQueue = false;
 
     if(typeof this.config.passedLifetimeMinutes !== "undefined") {
       this.passedLifetimeMinutes = this.config.passedLifetimeMinutes;
     }
 
-    //Sets a timeout to call onNoInternet() if we don't finish the process in config.readTimeout seconds.
-    setTimeout(() => {
-      if (this.finished) {
-        return;
-      }
-      this.timedOut = true;
-      this.finished = true;
-      if (this.d) {
-        console.log("Timing out");
-      }
-      this.listener.onNoInternet();
-    }, this.readTimeout * 1000);
-
     //Start the process.
     this.setUIDFromPreference();
+  }
+
+  onTimeOut() {
+    if (this.finished) {
+        return;
+    }
+    this.timedOut = true;
+    this.finished = true;
+    if (this.d) {
+      console.log("Timing out");
+    }
+    this.notify(QueueFairAdapter.NOINTERNET);
+    this.listener.onNoInternet();
+  }
+
+
+  // Returns a Promise that will resolve when the adapter process finishes.  The resolution
+  // returns SHOW if a Queue Page needs to be shown, and one of ERROR, NOINTERNET or PASS
+  // otherwise. A listener event handler will be called immediately after the promise resolves.
+  // Must be called from inside an async function to work.
+  // Usage: if(await adapter.goWait() == QueueFairAdapter.SHOW) {
+  //   //Stop further execution until either onPass, onError or onNoInternet is called.
+  //   return;
+  // }
+  goWait() {
+    return new Promise((res, rej) => {
+      this.res = res;
+      this.go();
+    });
   }
 
   //See if we have a stored UID from an earlier visit.  Will call checkPassed().
@@ -124,12 +163,13 @@ class QueueFairAdapter {
           return;
         }
         this.finished = true;
+        this.notify(QueueFairAdapter.PASS);
         this.listener.onPass('Repass');
       });
   }
 
-  //Consult Queue-Fair to see if the visitor should be shown a Queue UI/Page.
-  //Will call onError() if something goes wrong, or gotAdapter().
+  // Consult Queue-Fair to see if the visitor should be shown a Queue UI/Page.
+  // Will call onError() if something goes wrong, or gotAdapter().
   consultAdapter() {
     var url =
       'https://' +
@@ -142,7 +182,7 @@ class QueueFairAdapter {
       url += sep + 'uid=' + this.uid;
       sep = '&';
     }
-    
+
     url +=
       sep +
       'identifier=' +
@@ -152,38 +192,35 @@ class QueueFairAdapter {
       console.log("Consulting adapter " + url);
     }
     fetch(url)
-      .then(response => response.text())
-      .then(jsonStr => {
-        if(this.d) {
-          console.log("Adapter received "+jsonStr);
-        }
-        this.gotAdapter(jsonStr);
-      })
+      .then(response => response.json())
+      .then(json => this.gotAdapter(json))
       .catch(error => {
         if (this.finished) {
           return;
         }
         this.finished = true;
+        this.notify(QueueFairAdapter.ERROR);
         this.listener.onError(error);
       });
+  }
+
+  notify(what) {
+    if(this.savedTimeout !== null) {
+      clearTimeout(this.savedTimeout);
+      this.savedTimeout=null;
+    }
+    if(this.res === null)
+      return;
+    this.res(what);
+    this.res = null;
   }
 
   //We got a response from the Queue-Fair servers.
   gotAdapter(json) {
     try {
-
-      if(json.indexOf("{") == -1 || json.indexOf("<") === 0) {
-        if(this.d) {
-          console.log("Bad JSON received");
-        }
-        this.listener.onError("Did not receive JSON response - is your config correct?");
-        return;
-      } 
-
-      json = JSON.parse(json);
-
       if (json == null) {
         this.finished = true;
+        this.notify(QueueFairAdapter.ERROR);
         this.listener.onError('Null result from Adapter');
         return;
       }
@@ -218,12 +255,20 @@ class QueueFairAdapter {
         console.log("Action is " + action);
       }
       if (action == null) {
+        this.notify(QueueFairAdapter.ERROR);
         this.listener.onError('Result from Adapter has no action.');
         return;
       }
       if (action == 'SendToQueue') {
         if (this.d) {
           console.log("Showing queue");
+        }
+        this.continuePage = false;
+        if(this.config.waitForQueue) {
+          //Clear the timout but do not notify any waiting thread.
+          clearTimeout(this.savedTimeout);
+        } else {
+          this.notify(QueueFairAdapter.SHOW);
         }
         this.listener.onShow();
         return;
@@ -244,6 +289,7 @@ class QueueFairAdapter {
             (Date.now() + Number(this.passedLifetimeMinutes) * 60 * 1000)
         ));
 
+      this.notify(QueueFairAdapter.PASS);
       this.listener.onPass(json.action);
     } finally {
       this.finished = true;
