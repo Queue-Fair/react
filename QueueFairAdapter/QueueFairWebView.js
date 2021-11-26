@@ -4,6 +4,7 @@ import * as React from 'react';
 import { WebView } from 'react-native-webview';
 import { AppState } from 'react-native';
 import DefaultPreference from 'react-native-default-preference';
+import QueueFairAdapter from './QueueFairAdapter.js';
 
 class QueueFairWebView extends React.Component {
   //The configuration for Queue-Fair
@@ -23,16 +24,20 @@ class QueueFairWebView extends React.Component {
   onPass = null;
 
   //Used internally.
-  d = false; //Debug level logging
+  d = true; //Debug level logging
   passed = false; //Whether a pass has been received by this WebView.
   unmounted = false; //Whether the component is currently mounted.
   showingBlank = false; //Whether the WebView is currently showing about:blank
   passedLifetimeMinutes = 60; //Default value for Passed Lifetime
 
+  webViewTimeout = 30;
+  savedTimeout = null;
+
   state = {
     //The current app active/background state (also 'inactive' on iOS)
     appState: AppState.currentState,
   };
+
 
   constructor(props) {
     super(props);
@@ -46,6 +51,10 @@ class QueueFairWebView extends React.Component {
 
     if(typeof this.config.passedLifetimeMinutes !== "undefined") {
       this.passedLifetimeMinutes = this.config.passedLifetimeMinutes;
+    }
+
+    if(typeof this.config.webViewTimeout !== "undefined") {
+      this.webViewTimeout = this.config.webViewTimeout;
     }
 
     //Base URL
@@ -80,6 +89,16 @@ class QueueFairWebView extends React.Component {
 
     //Store the URL we want.
     this.src = { uri: this.location };
+
+    //Set a timeout in case the Queue Page does not load and run as expected.
+    this.savedTimeout = setTimeout(() => this.onTimeOut(),this.webViewTimeout*1000);
+
+  }
+
+  onTimeOut() {
+    this.savedTimeout = null;
+    this.notify(QueueFairAdapter.ERROR);
+    this.onError("Queue page did not run.");
   }
 
   render() {
@@ -93,6 +112,7 @@ class QueueFairWebView extends React.Component {
           if (this.d) {
             console.log("Load Error " + nativeEvent);
           }
+          this.notify(QueueFairAdapter.NOINTERNET);
           this.onNoInternet();
         }}
         onMessage={(event) => {
@@ -103,6 +123,18 @@ class QueueFairWebView extends React.Component {
     );
   }
 
+  //Notify any waiting threads.
+  notify(what) {
+    if(this.savedTimeout !== null) {
+      clearTimeout(this.savedTimeout);
+      this.savedTimeout = null;
+    }
+    if(QueueFairAdapter.instance === null) {
+      return;
+    }
+    QueueFairAdapter.instance.notify(what);
+  }
+
   componentWillUnmount() {
     if (this.d) {
       console.log("Unmount detected");
@@ -110,6 +142,7 @@ class QueueFairWebView extends React.Component {
     this.unmounted = true;
     this.appStateSubscription.remove();
     if (!this.passed) {
+      this.notify(QueueFairAdapter.ABANDON);
       this.onAbandon('Unmount');
     }
   }
@@ -144,6 +177,7 @@ class QueueFairWebView extends React.Component {
           this.showingBlank = true;
 
           this.webref.injectJavaScript("window.location='about:blank'");
+          this.notify(QueueFairAdapter.ABANDON);
           this.onAbandon('Background');
         }
         this.setState({ appState: nextAppState });
@@ -183,7 +217,14 @@ class QueueFairWebView extends React.Component {
       console.log("WV: " + message);
     }
 
-    //We only want messages containing JSON
+    if(this.savedTimeout !== null && message.indexOf("QF Queue Script Starting.") === 0) {
+      // Queue page has loaded and we should no longer
+      // time out - goWait will resolve with ABANDON, ERROR or PASS.
+      clearTimeout(this.savedTimeout);
+      this.savedTimeout = null;
+    }
+
+    //Otherwise, we only want messages containing JSON
     var i = message.indexOf('{');
     if (i === -1) {
       return;
@@ -208,10 +249,12 @@ class QueueFairWebView extends React.Component {
             console.log("Exception processing JSON " + jsonStr + ": " + e);
           }
         }
+        this.notify(QueueFairAdapter.ERROR);
         this.onError('Queue output could not be parsed.');
         return;
       }
       if (json == null) {
+        this.notify(QueueFairAdapter.ERROR);
         this.onError('Bad json.');
         return;
       }
@@ -219,6 +262,7 @@ class QueueFairWebView extends React.Component {
       if (message.indexOf('JOIN') !== -1) {
         var request = json.request;
         DefaultPreference.set('QF-mostRecentRequestNumber', '' + request).then(
+          //Don't notify on Joins.
           this.onJoin(request)
         );
         return;
@@ -235,6 +279,7 @@ class QueueFairWebView extends React.Component {
       var target = json.target;
 
       if (target == null) {
+        this.notify(QueueFairAdapter.ERROR);
         this.onError('Invalid target from queue.');
         return;
       }
@@ -261,14 +306,19 @@ class QueueFairWebView extends React.Component {
       }
 
       if (when <= 0) {
+        this.notify(QueueFairAdapter.PASS);
         this.onPass(passType);
         return;
       }
-      setTimeout(() => this.onPass(passType), when);
+      setTimeout(() => {
+          this.notify(QueueFairAdapter.PASS);
+          this.onPass(passType);
+        }, when);
     } catch (e) {
       if (this.d) {
         console.log("Exception handing message " + e);
       }
+      this.notify(QueueFairAdapter.ERROR);
       this.onError('Error handling queue: ' + e);
       return;
     }
