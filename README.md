@@ -5,7 +5,7 @@ Queue-Fair can be added to any React Native app easily in minutes.  This Queue-F
 
 
 ## About the Adapter
-The React Native Adapter has two components, the Adapter code that checks and validates your users with the Queue-Fair service, which is similar to our Java Server-Side Adapter, and a QueueFairWebView that displays Queue, Hold, PreSale and PostSale display to your users when they cannot be Passed immediately by SafeGuard.
+The React Native Adapter has two components, the Adapter code that checks and validates your users with the Queue-Fair service, and a QueueFairWebView that displays Queue, Hold, PreSale and PostSale display to your users when they cannot be Passed immediately by SafeGuard.
 
 You can create app-specific displays for your React Native apps by using the Portal and creating a named Variant for your app.  The QueueFairWebView can take up a whole-page Screen, or it can be combined with other React Native Components to provide a composite view.  For example, you might just want to display the Progress Bar within the Queue-Fair WebView, and use React Native Text Components or other Components for the rest of the display.  You can even have a one-pixel QueueFairWebView if you don't want to display any Queue-Fair UI at all.
 
