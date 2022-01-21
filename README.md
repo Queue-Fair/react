@@ -156,7 +156,7 @@ If you wish to fully clear your Passed status, then if you have been shown a Que
 
 Activation Rules and Variant Rules from the portal are not germane to this use case and are ignored.  Instead, specify the queue you wish to use and (optionally) the variant you want to display in QueueFairConfig.  Changing the Passed Lifetime in the Portal also has no affect on your React Native app users.  No queue or account secrets are downloaded or used, for security reasons (as they would be accessible to a very technically skilled user).  Secrets are not necessary for this use case.
 
-Any Target settings for your queue are also not germane to this use case and are also ignored - rather you set the target within your app in the onPass() method that you implement within your app.  Any Queue Pages shown within your app will not go on to request a target page from any site.
+Any Target settings for your queue are also not germane to this use case and are also ignored - rather you set the target within your app in the onPass() method that you implement within your app.  Any Queue Pages shown within your app will not go on to request a target page from any site.  The Passed Lifetime setting from the Portal is also not known to this Adapter - rather you set it in code as shown.
 
 QueueFairAdapter objects are not reusable - you should create a new one every time your app is about to start the protected activity/operation.
 
