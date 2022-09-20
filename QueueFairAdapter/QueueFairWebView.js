@@ -58,12 +58,15 @@ class QueueFairWebView extends React.Component {
     }
 
     //Base URL
-    this.location =
-      'https://' +
-      this.config.account +
-      '.queue-fair.net/' +
-      this.config.queue +
-      '?';
+    this.location = 'https://';
+
+    if(this.config.queueDomain) {
+      this.location += this.config.queueDomain;
+    } else {
+      this.location += this.config.account+".queueFair.net";
+    }
+    
+    this.location += '/' + this.config.queue + '?';
 
     if (this.config.variant) {
       this.location += 'qfv=' + this.config.variant + '&';
