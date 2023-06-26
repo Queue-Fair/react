@@ -79,7 +79,7 @@ npm install --save-dev sane
 
 and restart Metro, and run `npx react-native run-android` again.  On Mac, this happened automatically for us with watchman.
 
-**6.** Copy and paste App.js from the QueueFairDemo/before folder of this distribution into the QueueFairDemo folder that you have created.  Errors will be thrown because the Demo app uses Screen navigation to present a series of screens, rather than the single whole-page out-of-the-box display used by the default React Native app that you have created.
+**6.** Copy and paste App.js from the QueueFairDemo/before folder of this distribution into the QueueFairDemo folder that you have created.  If you had an App.tsx file, delete it.  Errors will be thrown because the Demo app uses Screen navigation to present a series of screens, rather than the single whole-page out-of-the-box display used by the default React Native app that you have created.
 
 **7.** To install the libraries for Screen and Navigation, run
 
