@@ -71,7 +71,7 @@ npx react-native run-ios
 
 If everything is configured correctly, this will start a new Emulator if one is not already running, and you will see the React Native out-of-the-box webapp appear eventually.  If you find you need to install any additional packages with `npm install`, you will need to restart Metro (CTRL-C to quit) in the other window before trying again, and if you are building for iOS, you'll need to do a `pod install` in the `QueueFairDemo/ios` folder too.
 
-**5.** Using your favourite text editor, open App.js within the app folder you have just created.  Try changing some of the displayed text, and saving.  Metro should pick up your changes and apply them automatically - if not, on Windows you need 
+**5.** Using your favourite text editor, open App.js within the app folder you have just created.  This file may be named App.tsx instead.  Try changing some of the displayed text, and saving.  Metro should pick up your changes and apply them automatically - if not, on Windows you need 
 
 ```
 npm install --save-dev sane
