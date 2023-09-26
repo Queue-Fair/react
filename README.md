@@ -127,7 +127,7 @@ That's it you're done!
 
 ### To test the React Native Adapter
 
-Use a queue that is not in use on other pages/apps, or create a new queue for testing.
+We RECOMMEND you run both the tests in this section after any update to your web servers or apps that could affect the operation of your Queue-Fair Adapter, including changes you make in the Portal, updates to packages used in your app or website code, script updates, page header updates, SDK updates, IDE updates or operating system updates.  If you have a release test matrix, add both these quick tests to it.  Use a queue that is not in use on other pages/apps, or create a new queue for testing.
 
 #### Testing SafeGuard
 Make sure your code uses the correct queue System Name, and that the Queue is set to SafeGuard.
